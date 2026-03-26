@@ -1,14 +1,38 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* Escala de grises y negros profundos */
+:root {
+    --bg-dark-custom: #0a0a0a; /* Negro más profundo para el fondo */
+    --accent-gray: #2d2d2d;    /* Gris para bordes o divisiones */
 }
 
 body {
-    margin: 0;
-    background-color: #212529;
+    background-color: var(--bg-dark-custom) !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.menu {
-    background-color: #212529;
+.navbar {
+    background-color: rgba(10, 10, 10, 0.95) !important;
+    backdrop-filter: blur(5px);
+}
+
+.card {
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: #6c757d !important; /* Gris claro al pasar el mouse */
+}
+
+/* Ajuste para que el texto secundario sea legible en fondo negro */
+.text-secondary {
+    color: #a0a0a0 !important;
+}
+
+.text-secondary-emphasis {
+    color: #d3d3d3 !important;
+}
+
+/* Espaciado personalizado */
+.tracking-tight {
+    letter-spacing: -1px;
 }
