@@ -1,73 +1,61 @@
+/* Fondo con degradado radial estático */
 body {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%) no-repeat center center fixed;
+    background-size: cover;
 }
 
-.login-container {
-    width: 100%;
-    max-width: 400px;
-    padding: 20px;
+/* Efecto para la tarjeta de login */
+.login-card {
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
-.login-form {
-    background-color: #343a40;
-    border: 2px solid #ffffff;
-    border-radius: 10px;
-    padding: 30px;
-    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+/* Estilización de los inputs para que se vean modernos */
+.custom-input:focus {
+    background-color: #000 !important;
+    border-color: #ffffff !important;
+    color: white !important;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
 }
 
-.login-form h2 {
-    color: #ffffff;
-    font-weight: bold;
+/* Quitar el borde azul por defecto de Bootstrap en los input-group-text */
+.input-group-text {
+    border-right: none !important;
 }
 
-.form-control:focus {
-    background-color: #495057;
-    color: #ffffff;
-    border-color: #ffffff;
-    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+.custom-input {
+    border-left: none !important;
 }
 
-.btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
+#B-icon:hover {
+    background-color: #e0e0e0;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
 }
 
-.btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #004085;
+/* Botón principal */
+#loginButton {
+    transition: all 0.3s ease;
 }
 
-.btn-secondary {
-    background-color: #6c757d;
-    border-color: #6c757d;
+#loginButton:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
 }
 
-.btn-secondary:hover {
-    background-color: #545b62;
-    border-color: #4e555b;
+/* Animación sutil de entrada */
+.container {
+    animation: fadeIn 0.8s ease-out;
 }
 
-.btn-outline-light {
-    color: #ffffff;
-    border-color: #ffffff;
-}
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
 
-.btn-outline-light:hover {
-    background-color: #ffffff;
-    color: #000000;
-}
-
-.input-group .btn {
-    background-color: #495057;
-    border-color: #6c757d;
-    color: #ffffff;
-}
-
-.input-group .btn:hover {
-    background-color: #6c757d;
-    border-color: #495057;
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

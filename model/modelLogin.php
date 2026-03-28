@@ -6,9 +6,8 @@ $db = new db();
 $pdo = $db->conexion();
 
 function login($pdo, $username, $password){
-    $stmt = $pdo->prepare('CALL sp_login(?, ?)');
+    $stmt = $pdo->prepare('CALL sp_login(?)');
     $stmt->bindParam(1, $username, PDO::PARAM_STR);
-    $stmt->bindParam(2, $password, PDO::PARAM_STR);
 
     try {
         $stmt->execute();

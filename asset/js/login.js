@@ -1,5 +1,25 @@
 //se captura el boton
 const ingresar = document.getElementById('loginButton');
+//se captura el boton del icono de la contraseña
+const Bicon = document.getElementById('B-icon');
+//con esta funcion, cuando haga click al icono se mostrara la contraseña
+Bicon.addEventListener('click', function () {
+
+    const icon = document.getElementById('eyeIcon');
+    const password = document.getElementById('password');
+
+    if (password.type == 'password' && icon.classList.contains('fa-eye')) {
+
+        password.type = 'text';
+        icon.classList.replace("fa-eye", "fa-eye-slash");
+
+    } else {
+
+        password.type = 'password';
+        icon.classList.replace("fa-eye-slash", "fa-eye");
+
+    }
+});
 //si si ejecuta el evento click en el boton, ejecuta una funcion
 ingresar.addEventListener('click', function () {
     //se capturan los inputs del login y se guardan en constantes
@@ -34,7 +54,7 @@ ingresar.addEventListener('click', function () {
                 Swal.fire({
                     icon: "error",
                     title: data.message,
-                    text: 'Error',
+                    text: '!',
                     theme: 'dark',
                     timer: 1500,
                     showConfirmButton: false,

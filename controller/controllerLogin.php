@@ -21,24 +21,38 @@ $user = $data['username'] ?? '';
 $password = $data['password'] ?? '';
 $csrf_token = $data['csrf_token'] ?? '';
 
-if (empty($user) || empty($password)) {
+if (empty($user) && empty($password)) {
     echo json_encode([
         'status' => 'error',
         'message' => '¡Campos vacíos!'
     ]);
     exit;
-}
+} elseif(empty($user) || empty($password)){
+    echo json_encode([
+        'status' => 'error',
+        'message' => '¡Debe llenar todos los campos!'
+    ]);
+    exit;
+} 
 
 if ($tokenValido = validarCrsf($csrf_token)) {
     $user = limpiarCampos($user);
 
     try {
+
         $login = login($pdo, $user, $password);
 
         if (!$login){
             echo json_encode([
                 'status' => 'error',
                 'message' => '¡Ingresa un usuario valido!'
+            ]);
+            exit;
+
+        } elseif ($login['password'] !== $password){
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Contraseña incorrecta'
             ]);
             exit;
         }

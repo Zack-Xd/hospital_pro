@@ -15,7 +15,6 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary sticky-top">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="#">
-                <img src="asset/img/HIcon.webp" alt="Logo" width="40" height="40" class="me-2">
                 <span class="fw-bold tracking-tight">HOSPITAL <span class="text-secondary">PRO</span></span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -50,7 +49,7 @@
                     </div>
                 </div>
                 <div class="col-lg-5 d-none d-lg-block text-center">
-                    <i class="bi bi-shield-lock-fill text-secondary" style="font-size: 10rem; opacity: 0.5;"></i>
+                    <img src="asset/img/HIcon.webp" alt="Logo" style="font-size: 10rem; opacity: 0.5;" class="me-2">
                 </div>
             </div>
         </div>
