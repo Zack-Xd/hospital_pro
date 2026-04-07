@@ -12,9 +12,9 @@ $token = $_SESSION['csrf_token'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/lib/bootstrap.min.css">
+    <link rel="stylesheet" href="../asset/lib/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../asset/lib/fontawesome-free-7.2.0-web/css/all.min.css">
     <link rel="stylesheet" href="../asset/css/login.css">
     <title>Hospital Pro | Acceso al Sistema</title>
 </head>
@@ -60,7 +60,7 @@ $token = $_SESSION['csrf_token'];
                         <div class="d-grid gap-2">
                             <button type="button" id="loginButton" class="btn btn-light fw-bold py-2">Ingresar al Sistema</button>
                             <a href="../index.php" class="btn btn-link btn-sm text-secondary text-decoration-none mt-2">
-                                <i class="bi bi-arrow-left me-1"></i> Volver al Inicio
+                                <i class="fa-solid fa-arrow-left"></i> Volver al Inicio
                             </a>
                         </div>
                     </form>
@@ -74,8 +74,8 @@ $token = $_SESSION['csrf_token'];
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../asset/lib/bootstrap.bundle.min.js"></script>
+    <script src="../asset/lib/sweetalert2@11.js"></script>
     <script src="../asset/js/login.js"></script>
 </body>
 </html>

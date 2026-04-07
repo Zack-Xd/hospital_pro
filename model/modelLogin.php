@@ -5,7 +5,7 @@ require_once __DIR__ . "../../conexion.php";
 $db = new db();
 $pdo = $db->conexion();
 
-function login($pdo, $username, $password){
+function login($pdo, $username){
     $stmt = $pdo->prepare('CALL sp_login(?)');
     $stmt->bindParam(1, $username, PDO::PARAM_STR);
 
