@@ -1,156 +1,245 @@
-/* Carga y dibuja la tabla de usuarios */
-function cargarUsuarios() {
-    fetch('/controllers/UsuarioController.php?action=listar')
-        .then(r => r.json())
-        .then(res => {
-            const tbody = document.getElementById('tbodyUsuarios');
-            if (!res.success || !res.data.length) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">Sin usuarios</td></tr>';
-                return;
-            }
-            tbody.innerHTML = res.data.map(u => {
-                const badge = u.fk_rol == 1
-                    ? `<span class="badge badge-admin">${u.nombre_rol}</span>`
-                    : `<span class="badge badge-op">${u.nombre_rol}</span>`;
+const ENDPOINT = '../../controller/UsuarioController.php';
 
-                /* Determina que botones mostrar segun el rol de sesion */
-                let acciones = '';
-                if (ROL_SESION === 1) {
-                    /* Admin: puede editar y eliminar a cualquiera (menos a si mismo en eliminar) */
-                    acciones = `<button class="btn btn-secondary" style="padding:5px 12px;font-size:.8rem"
-                                    onclick="abrirModal(${u.id_user})">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>`;
-                    if (u.id_user != ID_SESION) {
-                        acciones += ` <button class="btn btn-danger" style="padding:5px 12px;font-size:.8rem"
-                                        onclick="eliminarUsuario(${u.id_user}, '${u.nombre_completo}')">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>`;
-                    }
-                } else if (u.id_user === ID_SESION) {
-                    /* Operativo: solo puede editarse a si mismo */
-                    acciones = `<button class="btn btn-secondary" style="padding:5px 12px;font-size:.8rem"
-                                    onclick="abrirModal(${u.id_user})">
-                                    <i class="fa-solid fa-pen"></i> Mi perfil
-                                </button>`;
-                }
+const tablaBody = document.getElementById('tbodyUsuarios');
+const searchInput = document.getElementById('searchUsuario');
+let usuariosData = [];
 
-                return `<tr>
-                    <td>${u.id_user}</td>
-                    <td>${u.nombre_completo}</td>
-                    <td>${u.username}</td>
-                    <td>${badge}</td>
-                    <td>${u.fecha_registro}</td>
-                    <td>${acciones}</td>
-                </tr>`;
-            }).join('');
-        });
-}
+const formatRol = (rol) => {
+    if (rol === '1' || rol === 1) return 'Administrador';
+    if (rol === '2' || rol === 2) return 'Operativo';
+    return 'Desconocido';
+};
 
-/* Carga los roles en el select del modal */
-function cargarRolesModal() {
-    fetch('/controllers/UsuarioController.php?action=roles')
-        .then(r => r.json())
-        .then(res => {
-            const sel = document.getElementById('edit_rol');
-            sel.innerHTML = res.data.map(r =>
-                `<option value="${r.id_rol}">${r.nombre_rol}</option>`
-            ).join('');
-        });
-}
+const formatFecha = (fecha) => {
+    if (!fecha) return '-';
+    const date = new Date(fecha);
+    return date.toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+};
 
-/* Abre el modal prellenado con los datos del usuario */
-function abrirModal(id) {
-    fetch(`/controllers/UsuarioController.php?action=obtener&id=${id}`)
-        .then(r => r.json())
-        .then(res => {
-            if (!res.success) return;
-            const u = res.data;
-            document.getElementById('edit_id').value       = u.id_user;
-            document.getElementById('edit_nombre').value   = u.nombre_completo;
-            document.getElementById('edit_username').value = u.username;
-            document.getElementById('edit_rol').value      = u.fk_rol;
-
-            /* Si es operativo editando su propio perfil: muestra campo password, oculta select rol */
-            if (ROL_SESION === 2) {
-                document.getElementById('edit_rol_group').style.display  = 'none';
-                document.getElementById('edit_pass_group').style.display = 'block';
-                document.getElementById('edit_password_actual').value    = '';
-            } else {
-                document.getElementById('edit_rol_group').style.display  = 'block';
-                document.getElementById('edit_pass_group').style.display = 'none';
-            }
-
-            document.getElementById('modalOverlay').style.display = 'flex';
-        });
-}
-
-/* Guarda los cambios del modal */
-document.getElementById('btnGuardarEdicion').addEventListener('click', () => {
-    const data = new FormData();
-    data.append('id_user',          document.getElementById('edit_id').value);
-    data.append('nombre_completo',  document.getElementById('edit_nombre').value.trim());
-    data.append('username',         document.getElementById('edit_username').value.trim());
-
-    let endpoint;
-    if (ROL_SESION === 1) {
-        /* Admin: usa la accion de actualizar general */
-        data.append('action',  'actualizar');
-        data.append('fk_rol',  document.getElementById('edit_rol').value);
-        endpoint = '/controllers/UsuarioController.php';
-    } else {
-        /* Operativo: usa la accion de perfil propio con confirmacion de password */
-        data.append('action',          'actualizar_propio');
-        data.append('password_actual', document.getElementById('edit_password_actual').value);
-        endpoint = '/controllers/UsuarioController.php';
+const renderTable = (usuarios) => {
+    if (!usuarios || usuarios.length === 0) {
+        tablaBody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center text-secondary py-4">No hay usuarios para mostrar</td>
+            </tr>
+        `;
+        return;
     }
 
-    fetch(endpoint, { method: 'POST', body: data })
-        .then(r => r.json())
-        .then(res => {
-            cerrarModal();
-            Swal.fire({
-                icon: res.success ? 'success' : 'error',
-                title: res.msg,
-                background: '#1a1a1a',
-                color: '#f0f0f0'
-            }).then(() => cargarUsuarios());
+    tablaBody.innerHTML = usuarios.map((usuario, index) => {
+        return `
+            <tr>
+                <td>${usuario.id_user ?? index + 1}</td>
+                <td>${usuario.nombre_completo ?? '-'}</td>
+                <td>${usuario.username ?? '-'}</td>
+                <td>${formatRol(usuario.fk_rol ?? usuario.nombre_rol)}</td>
+                <td>${formatFecha(usuario.fecha_registro)}</td>
+                <td>
+                    <button class="btnVer btn btn-sm btn-outline-light"
+  data-id="${usuario.id_user}"
+  data-nombre="${usuario.nombre_completo}"
+  data-username="${usuario.username}"
+  data-rol="${usuario.fk_rol}">
+                        <i class="fas fa-eye"></i> Ver
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+};
+
+const filterUsuarios = (query) => {
+    const search = query.trim().toLowerCase();
+    if (!search) return usuariosData;
+    return usuariosData.filter(usuario => {
+        return (
+            (usuario.nombre_completo || '').toLowerCase().includes(search) ||
+            (usuario.username || '').toLowerCase().includes(search) ||
+            (formatRol(usuario.fk_rol || usuario.nombre_rol).toLowerCase().includes(search))
+        );
+    });
+};
+
+const fetchUsuarios = async () => {
+    tablaBody.innerHTML = `
+        <tr>
+            <td colspan="6" class="text-center text-secondary py-4">Cargando usuarios...</td>
+        </tr>
+    `;
+
+    try {
+        const response = await fetch(ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
         });
+
+        const data = await response.json();
+
+        if (data.status === 'ok') {
+            usuariosData = data.usuarios || [];
+            renderTable(usuariosData);
+        } else {
+            renderTable([]);
+            Swal.fire({
+                icon: 'info',
+                title: 'Usuarios',
+                text: data.message || 'No se pudieron cargar los usuarios',
+                theme: 'dark',
+                timer: 1800,
+                showConfirmButton: false
+            });
+        }
+    } catch (error) {
+        tablaBody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center text-danger py-4">Error al cargar usuarios</td>
+            </tr>
+        `;
+        console.error('Error cargando usuarios:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo conectar con el servidor.',
+            theme: 'dark',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+};
+
+window.addEventListener('DOMContentLoaded', () => {
+    fetchUsuarios();
+    searchInput.addEventListener('input', (event) => {
+        renderTable(filterUsuarios(event.target.value));
+    });
 });
 
-/* Confirmacion para eliminar usuario */
-function eliminarUsuario(id, nombre) {
-    Swal.fire({
-        title: `Eliminar a ${nombre}?`,
-        text: 'Esta accion es permanente y no se puede deshacer.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Si, eliminar',
-        cancelButtonText: 'Cancelar',
-        confirmButtonColor: '#e53935',
-        background: '#1a1a1a',
-        color: '#f0f0f0'
-    }).then(result => {
-        if (!result.isConfirmed) return;
-        const data = new FormData();
-        data.append('action',  'eliminar');
-        data.append('id_user', id);
-        fetch('/controllers/UsuarioController.php', { method: 'POST', body: data })
-            .then(r => r.json())
-            .then(res => {
-                Swal.fire({ icon: res.success ? 'success' : 'error', title: res.msg,
-                            background: '#1a1a1a', color: '#f0f0f0' })
-                    .then(() => cargarUsuarios());
-            });
-    });
-}
+const crearModal = () => {
+    const modal = document.createElement('div');
+    modal.id = 'modalUsuario';
+    modal.style = `
+        position: fixed;
+        top:0; left:0;
+        width:100%; height:100%;
+        background: rgba(0,0,0,0.7);
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        z-index:9999;
+    `;
 
-function cerrarModal() {
-    document.getElementById('modalOverlay').style.display = 'none';
-}
+    modal.innerHTML = `
+        <div style="background:#111; padding:20px; border-radius:10px; width:400px;">
+            <h4 class="text-white mb-3">Editar Usuario</h4>
+            <label for="editNombre" class="form-label small text-secondary">Nombre</label>
+            <input id="editNombre" class="form-control mb-2 bg-dark text-white border-secondary" placeholder="Nombre">
+            <label for="editUsername" class="form-label small text-secondary">Username</label>
+            <input id="editUsername" class="form-control mb-2 bg-dark text-white border-secondary" placeholder="Username">
+            <label for="editRol" class="form-label small text-secondary">Rol</label>
+            <select id="editRol" class="form-control mb-2 bg-dark text-white border-secondary">
+                                <option value="" disabled selected>Seleccione un rol</option>
+                                <option value="1">Administrador</option>
+                                <option value="2">Opertativo</option>
+            </select>
+            <label for="editPassword" class="form-label small text-secondary">Nueva contraseña</label>
+            <input id="editPassword" type="password" class="form-control mb-3 bg-dark text-white border-secondary" placeholder="Nueva contraseña">
 
-document.getElementById('btnCerrarModal').addEventListener('click', cerrarModal);
+            <div class="d-flex justify-content-end gap-2">
+                <button id="cerrarModal" class="btn btn-secondary btn-sm">Cerrar</button>
+                <button id="guardarCambios" class="btn btn-light btn-sm">Guardar</button>
+            </div>
+        </div>
+    `;
 
-/* Inicio */
-cargarRolesModal();
-cargarUsuarios();
+    document.body.appendChild(modal);
+    return modal;
+};
+
+document.addEventListener('click', (e) => {
+    if (e.target.closest('.btnVer')) {
+
+        const btn = e.target.closest('.btnVer');
+
+        const usuario = {
+            id: btn.dataset.id,
+            nombre: btn.dataset.nombre,
+            username: btn.dataset.username,
+            rol: btn.dataset.rol
+        };
+
+        const modal = crearModal();
+
+        const nombre = modal.querySelector('#editNombre');
+        const username = modal.querySelector('#editUsername');
+        const rol = modal.querySelector('#editRol');
+        const password = modal.querySelector('#editPassword');
+
+        nombre.value = usuario.nombre;
+        username.value = usuario.username;
+        rol.value = usuario.rol;
+
+        modal.querySelector('#cerrarModal').addEventListener('click', () => {
+            modal.remove();
+        });
+
+        const saveButton = modal.querySelector('#guardarCambios');
+        saveButton.addEventListener('click', async (event) => {
+            event.stopPropagation();
+            saveButton.disabled = true;
+
+            const datos = {
+                id: usuario.id,
+                nombre_completo: nombre.value,
+                username: username.value,
+                rol: parseInt(rol.value),
+                password: password.value
+            };
+
+            try {
+                const response = await fetch('../../controller/actualizarUsuario.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datos)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.status !== 'success') {
+                    throw new Error(data.message || 'No se pudo actualizar el usuario');
+                }
+
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Usuario actualizado',
+                    text: data.message,
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+
+                modal.remove();
+                fetchUsuarios();
+            } catch (error) {
+                console.error('Error al actualizar usuario:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message || 'Error al actualizar el usuario',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } finally {
+                saveButton.disabled = false;
+            }
+        });
+    }
+});

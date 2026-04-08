@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-04-2026 a las 03:16:43
+-- Tiempo de generación: 08-04-2026 a las 17:01:13
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -35,11 +35,12 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_actualizar_perfil_propio` (IN `p
     END IF;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_actualizar_usuario` (IN `p_id` INT, IN `p_nombre` VARCHAR(100), IN `p_username` VARCHAR(50), IN `p_rol` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_actualizar_usuario` (IN `p_nombre` VARCHAR(100), IN `p_username` VARCHAR(50), IN `p_rol` INT, IN `p_password` VARCHAR(255), IN `p_id` INT)   BEGIN
     UPDATE usuarios
-    SET nombre_completo = p_nombre,
-        username        = p_username,
-        fk_rol          = p_rol
+    SET nombre_completo = COALESCE(NULLIF(p_nombre, ''), nombre_completo),
+        username        = COALESCE(NULLIF(p_username, ''), username),
+        fk_rol          = COALESCE(NULLIF(p_rol, ''), fk_rol),
+        password        = COALESCE(NULLIF(p_password, ''), password)
     WHERE id_user = p_id;
 END$$
 
@@ -493,9 +494,12 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id_user`, `nombre_completo`, `username`, `password`, `id_creador`, `fk_rol`, `fecha_registro`) VALUES
-(1, 'Ana Garcia', 'admin_ana', '12345', NULL, 1, '2024-01-10'),
+(1, 'Ana Garcia', 'admin_uwu', '$2y$10$9OvzYwMsbc2GP5s9LiuaWO.i1vsVsCCihq36dT1Xx9KLMMG6IRSY2', NULL, 1, '2024-01-10'),
 (2, 'Luis Perez', 'oper_luis', '12345', 3, 2, '2024-01-15'),
-(3, 'Maria Lopez', 'admin_maria', '12345', 1, 1, '2024-02-01');
+(3, 'Maria Lopez', 'admin_maria', '12345', 1, 1, '2024-02-01'),
+(4, 'Zack', 'Zack', '12345', 1, 1, '2026-04-08'),
+(15, 'Juan', 'Juanito', '$2y$10$EFlIrRfDoWvZ0Jtc48zvHeo7PGpmFz0CaXL3x.baCfMhMhvw5bpDG', 4, 2, '2026-04-08'),
+(16, 'Simon', 'Saimon', '$2y$10$EdKg.n1NNQTh3VIOM5AXfeak5Fjqj6.0PfkjEA4Wl7ROsG/ZOJIfO', 4, 2, '2026-04-08');
 
 --
 -- Índices para tablas volcadas
@@ -720,7 +724,7 @@ ALTER TABLE `recetas`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- Restricciones para tablas volcadas

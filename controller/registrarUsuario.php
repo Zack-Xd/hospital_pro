@@ -23,7 +23,7 @@ $password = $data['password'] ?? '';
 $id_creador = $_SESSION['user']['id_user'];
 
 
-if (empty($rol) || empty($nombre_completo) || empty($username) || empty($password)) {
+if (empty($rol) && empty($nombre_completo) && empty($username) && empty($password)) {
     echo json_encode([
         'status' => 'error',
         'message' => '¡Debe llenar todos los campos!'
@@ -31,7 +31,7 @@ if (empty($rol) || empty($nombre_completo) || empty($username) || empty($passwor
     exit;
 }
 
-if(!$rol){
+if($nombre_completo && $username && $password && empty($rol)){
     echo json_encode([
         'status' => 'error',
         'message' => 'debe seleccionar un rol'
@@ -39,7 +39,7 @@ if(!$rol){
     exit;
 }
 
-if(!$nombre_completo){
+if($rol && $username && $password && empty($nombre_completo)){
     echo json_encode([
         'status' => 'error',
         'message' => 'Escriba un nombre completo válido'
@@ -47,7 +47,7 @@ if(!$nombre_completo){
     exit;
 }
 
-if(!$username){
+if($rol && $nombre_completo && $password && empty($username)){
     echo json_encode([
         'status' => 'error',
         'message' => 'Escriba un nombre de usuario válido'
@@ -55,7 +55,7 @@ if(!$username){
     exit;
 }
 
-if(!$password){
+if($rol && $nombre_completo && $username && empty($password)){
     echo json_encode([
         'status' => 'error',
         'message' => 'Contraseña inválida'
