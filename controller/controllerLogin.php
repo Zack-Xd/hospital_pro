@@ -72,12 +72,12 @@ if ($tokenValido = validarCrsf($csrf_token)) {
         if ($admin) {
             echo json_encode([
                 'status' => 'success',
-                'redirect' => '../view/dashboardAd.php'
+                'redirect' => '../view/Administrador/dashboardAd.php'
             ]);
         } elseif ($operat) {
             echo json_encode([
                 'status' => 'success',
-                'redirect' => '../view/dashboardOp.php'
+                'redirect' => '../view/Operativo/dashboardOp.php'
             ]);
         } else {
             session_destroy();

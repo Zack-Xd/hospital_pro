@@ -1,0 +1,44 @@
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    position: fixed;
+}
+
+/* Contenido */
+.main-content {
+    margin-left: 260px;
+}
+
+/* Links */
+.nav-link {
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+.nav-link:hover {
+    background-color: #1f1f1f;
+}
+
+/* Cards */
+.card {
+    background-color: #1a1a1a !important;
+    border: 1px solid #2c2c2c !important;
+    color: white;
+}
+
+/* Stats */
+.stat-card {
+    border-radius: 12px;
+    transition: 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Iconos */
+.stat-icon {
+    font-size: 1.8rem;
+    color: #aaa;
+}
