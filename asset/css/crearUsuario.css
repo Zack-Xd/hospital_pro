@@ -1,0 +1,60 @@
+/* Fondo con degradado radial estático */
+body {
+    background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%) no-repeat center center fixed;
+    background-size: cover;
+}
+
+/* Efecto para la tarjeta de crear usuario */
+.crear-usuario-card {
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Estilización de los inputs para que se vean modernos */
+.custom-input:focus, .form-select:focus {
+    background-color: #000 !important;
+    border-color: #ffffff !important;
+    color: white !important;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+}
+
+/* Quitar el borde azul por defecto de Bootstrap en los input-group-text */
+.input-group-text {
+    border-right: none !important;
+}
+
+.custom-input, .form-select {
+    border-left: none !important;
+}
+
+#B-icon:hover {
+    background-color: #e0e0e0;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+}
+
+/* Botón principal */
+#btnCrear {
+    transition: all 0.3s ease;
+}
+
+#btnCrear:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+}
+
+/* Animación sutil de entrada */
+.crear-usuario-card {
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

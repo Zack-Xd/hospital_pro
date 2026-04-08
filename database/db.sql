@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 18-03-2026 a las 15:18:59
+-- Tiempo de generación: 08-04-2026 a las 03:16:43
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -25,7 +25,89 @@ DELIMITER $$
 --
 -- Procedimientos
 --
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_login` (IN `p_documento` VARCHAR(50))   SELECT * FROM usuarios WHERE documento = p_documento$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_actualizar_perfil_propio` (IN `p_id` INT, IN `p_nombre` VARCHAR(100), IN `p_username` VARCHAR(50), IN `p_pass_actual` VARCHAR(255))   BEGIN
+    IF EXISTS (SELECT 1 FROM usuarios WHERE id_user = p_id AND password = p_pass_actual) THEN
+        UPDATE usuarios SET nombre_completo = p_nombre, username = p_username
+        WHERE id_user = p_id;
+        SELECT 'ok' AS resultado;
+    ELSE
+        SELECT 'password_incorrecta' AS resultado;
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_actualizar_usuario` (IN `p_id` INT, IN `p_nombre` VARCHAR(100), IN `p_username` VARCHAR(50), IN `p_rol` INT)   BEGIN
+    UPDATE usuarios
+    SET nombre_completo = p_nombre,
+        username        = p_username,
+        fk_rol          = p_rol
+    WHERE id_user = p_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_crear_usuario` (IN `p_nombre` VARCHAR(100), IN `p_username` VARCHAR(50), IN `p_password` VARCHAR(255), IN `p_rol` INT, IN `p_id_creador` INT)   BEGIN
+    INSERT INTO usuarios (nombre_completo, username, password, fk_rol, id_creador, fecha_registro)
+    VALUES (p_nombre, p_username, p_password, p_rol, p_id_creador, CURDATE());
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_eliminar_usuario` (IN `p_id` INT)   BEGIN
+    DELETE FROM usuarios WHERE id_user = p_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_login` (IN `p_username` VARCHAR(50))   SELECT * FROM usuarios WHERE username = p_username$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_obtener_roles` ()   BEGIN
+    SELECT id_rol, nombre_rol FROM roles;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_obtener_usuarios` ()   BEGIN
+    SELECT u.id_user, u.nombre_completo, u.username,
+           u.fk_rol, r.nombre_rol, u.id_creador, u.fecha_registro
+    FROM usuarios u
+    INNER JOIN roles r ON u.fk_rol = r.id_rol
+    ORDER BY u.id_user ASC;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_obtener_usuario_por_id` (IN `p_id` INT)   BEGIN
+    SELECT u.id_user, u.nombre_completo, u.username,
+           u.password, u.fk_rol, r.nombre_rol, u.id_creador, u.fecha_registro
+    FROM usuarios u
+    INNER JOIN roles r ON u.fk_rol = r.id_rol
+    WHERE u.id_user = p_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_total_usuarios` ()   BEGIN
+    SELECT COUNT(*) AS total FROM usuarios;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ultimo_usuario` ()   BEGIN
+    SELECT u.nombre_completo, r.nombre_rol, u.fecha_registro
+    FROM usuarios u
+    INNER JOIN roles r ON u.fk_rol = r.id_rol
+    ORDER BY u.fecha_registro DESC, u.id_user DESC
+    LIMIT 1;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_creados_por_admin` ()   BEGIN
+    SELECT creador.nombre_completo AS admin_nombre,
+           COUNT(u.id_user) AS usuarios_creados
+    FROM usuarios u
+    INNER JOIN usuarios creador ON u.id_creador = creador.id_user
+    GROUP BY creador.id_user, creador.nombre_completo
+    ORDER BY usuarios_creados DESC;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_por_fecha` ()   BEGIN
+    SELECT fecha_registro, COUNT(*) AS cantidad
+    FROM usuarios
+    GROUP BY fecha_registro
+    ORDER BY fecha_registro ASC;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_por_rol` ()   BEGIN
+    SELECT r.nombre_rol, COUNT(u.id_user) AS cantidad
+    FROM roles r
+    LEFT JOIN usuarios u ON r.id_rol = u.fk_rol
+    GROUP BY r.id_rol, r.nombre_rol;
+END$$
 
 DELIMITER ;
 
@@ -401,18 +483,19 @@ CREATE TABLE `usuarios` (
   `nombre_completo` varchar(100) DEFAULT NULL,
   `username` varchar(50) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
+  `id_creador` int(11) DEFAULT NULL,
   `fk_rol` int(11) DEFAULT NULL,
-  `fecha_registro` date DEFAULT NULL
+  `fecha_registro` date DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `usuarios`
 --
 
-INSERT INTO `usuarios` (`id_user`, `nombre_completo`, `username`, `password`, `fk_rol`, `fecha_registro`) VALUES
-(1, 'Ana Garcia', 'admin_ana', '12345', 1, '2024-01-10'),
-(2, 'Luis Perez', 'oper_luis', '12345', 2, '2024-01-15'),
-(3, 'Maria Lopez', 'admin_maria', '12345', 1, '2024-02-01');
+INSERT INTO `usuarios` (`id_user`, `nombre_completo`, `username`, `password`, `id_creador`, `fk_rol`, `fecha_registro`) VALUES
+(1, 'Ana Garcia', 'admin_ana', '12345', NULL, 1, '2024-01-10'),
+(2, 'Luis Perez', 'oper_luis', '12345', 3, 2, '2024-01-15'),
+(3, 'Maria Lopez', 'admin_maria', '12345', 1, 1, '2024-02-01');
 
 --
 -- Índices para tablas volcadas

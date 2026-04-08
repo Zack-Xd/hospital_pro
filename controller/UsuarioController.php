@@ -5,7 +5,7 @@
  * Tambien maneja el logout
  */
 session_start();
-require_once __DIR__ . '/../models/UsuarioModel.php';
+require_once __DIR__ . '../../models/UsuarioModel.php';
 
 header('Content-Type: application/json');
 
@@ -14,26 +14,30 @@ $action = $_GET['action'] ?? $_POST['action'] ?? '';
 /* Logout: destruye la sesion y redirige */
 if ($action === 'logout') {
     session_destroy();
-    header('Location: /index.php');
+    header('Location: /hospital_pro/index.php');
     exit;
 }
 
 /* Todas las demas acciones requieren sesion activa */
 if (!isset($_SESSION['id_user'])) {
-    echo json_encode(['success' => false, 'msg' => 'Sin sesion']);
+    echo json_encode([
+    'status' => 'error',
+    'message' => 'Sin sesion']);
     exit;
 }
 
 $model     = new UsuarioModel();
-$sesion_id  = (int)$_SESSION['id_user'];
-$sesion_rol = (int)$_SESSION['fk_rol'];
+$sesion_id  = (int)$_SESSION['user']['id_user'];
+$sesion_rol = (int)$_SESSION['user']['rol'];
 
 switch ($action) {
 
     /* Lista todos los usuarios */
     case 'listar':
         $usuarios = $model->obtenerUsuarios();
-        echo json_encode(['success' => true, 'data' => $usuarios]);
+        echo json_encode([
+            'status' => 'error', 
+            'data' => $usuarios]);
         break;
 
     /* Trae los datos de un usuario para pre-llenar el modal de edicion */
@@ -46,7 +50,9 @@ switch ($action) {
     /* Trae los roles para el select */
     case 'roles':
         $roles = $model->obtenerRoles();
-        echo json_encode(['success' => true, 'data' => $roles]);
+        echo json_encode([
+        'status' => 'success', 
+        'data' => $roles]);
         break;
 
     /* Crea un nuevo usuario (solo administradores) */

@@ -9,12 +9,11 @@
 
         <!-- Inicio -->
         <li class="nav-item mb-2">
-            <a href="/views/dashboardAd.php" class="nav-link text-white">
+            <a href="..\Administrador\dashboardAd.php" class="nav-link text-white">
                 <i class="fa-solid fa-house me-2"></i> Inicio
             </a>
         </li>
 
-        <!-- Usuarios (DROPDOWN REAL) -->
         <li class="nav-item dropdown mb-2">
             <a class="nav-link dropdown-toggle text-white" href="#" data-bs-toggle="dropdown">
                 <i class="fa-solid fa-users me-2"></i> Usuarios
@@ -24,14 +23,14 @@
 
                 <?php if ($_SESSION['user']['rol'] == 1): ?>
                 <li>
-                    <a class="dropdown-item" href="/views/crearUsuarios.php">
+                    <a class="dropdown-item" href="..\Administrador\crearUsuarios.php">
                         <i class="fa-solid fa-user-plus me-2"></i> Crear Usuario
                     </a>
                 </li>
                 <?php endif; ?>
 
                 <li>
-                    <a class="dropdown-item" href="/views/usuarios.php">
+                    <a class="dropdown-item" href="..\Administrador\usuarios.php">
                         <i class="fa-solid fa-list me-2"></i> Lista de Usuarios
                     </a>
                 </li>
@@ -41,14 +40,14 @@
 
         <!-- Estadísticas -->
         <li class="nav-item mb-2">
-            <a href="/views/estadisticas.php" class="nav-link text-white">
+            <a href="..\Administrador\estadisticas.php" class="nav-link text-white">
                 <i class="fa-solid fa-chart-bar me-2"></i> Estadísticas
             </a>
         </li>
 
         <!-- Reportes -->
         <li class="nav-item mb-2">
-            <a href="/views/reportes.php" class="nav-link text-white">
+            <a href="..\Administrador\reportes.php" class="nav-link text-white">
                 <i class="fa-solid fa-file-lines me-2"></i> Reportes
             </a>
         </li>

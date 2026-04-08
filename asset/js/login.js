@@ -40,7 +40,7 @@ ingresar.addEventListener('click', function () {
     }).then(response => response.json())
         .then(data => { //
             if (data.status == 'success') {
-                Swal.fire({
+                Swal.fire({ 
                     title: "!Has iniciado sesión correctamente!",
                     icon: 'success',
                     theme: 'dark',

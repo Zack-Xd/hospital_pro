@@ -1,89 +1,87 @@
 <?php
-require_once __DIR__ . '/../../views/shared/sesion.php';
-/* Solo administradores pueden crear usuarios */
-if ($sesion_rol !== 1) { header('Location: /views/dashboardOp.php'); exit; }
+session_start();
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Crear Usuario</title>
-    <link rel="stylesheet" href="/assets/css/global.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="../../asset/css/crearUsuario.css">
+    <link rel="stylesheet" href="../../asset/lib/bootstrap.min.css">
+    <link rel="stylesheet" href="../../asset/lib/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../asset/lib/fontawesome-free-7.2.0-web/css/all.min.css">
 </head>
-<body>
-<div class="wrapper">
-    <?php require_once __DIR__ . '/../shared/sidebar.php'; ?>
 
-    <main class="main-content">
-        <h1 class="page-title">Crear Usuario</h1>
+<body class="bg-black text-white">
 
-        <div class="card" style="max-width:480px;">
-            <div class="form-group">
-                <label>Rol</label>
-                <select id="fk_rol" class="form-control">
-                    <option value="">Cargando roles...</option>
-                </select>
+    <div class="d-flex vh-100">
+
+        <?php require_once __DIR__ . '\..\items\sidebar.php'; ?>
+
+        <main class="main-content flex-grow-1 p-4 d-flex justify-content-center align-items-center">
+            <div class="card bg-dark border-secondary shadow-lg p-4 crear-usuario-card" style="max-width: 480px; width: 100%;">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold h4 text-white">CREAR USUARIO</h2>
+                    <p class="text-secondary small">Gestión de Usuarios - Hospital Pro</p>
+                </div>
+                <form id="crearUsuarioForm">
+                    <div class="mb-3">
+                        <label for="rol" class="form-label small text-secondary">Rol</label>
+                        <div class="input-group border-secondary">
+                            <span class="input-group-text bg-black border-secondary text-secondary">
+                                <i class="fas fa-users"></i>
+                            </span>
+                            <select id="rol" class="form-select bg-black text-white border-secondary custom-input">
+                                <option value="" disabled selected>Seleccione un rol</option>
+                                <option value="1">Administrador</option>
+                                <option value="2">Opertativo</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nombre_completo" class="form-label small text-secondary">Nombre completo</label>
+                        <div class="input-group border-secondary">
+                            <span class="input-group-text bg-black border-secondary text-secondary">
+                                <i class="fas fa-user"></i>
+                            </span>
+                            <input type="text" id="nombre_completo" class="form-control bg-black text-white border-secondary custom-input" placeholder="Ej: Juan Perez" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="username" class="form-label small text-secondary">Nombre de usuario</label>
+                        <div class="input-group border-secondary">
+                            <span class="input-group-text bg-black border-secondary text-secondary">
+                                <i class="fas fa-at"></i>
+                            </span>
+                            <input type="text" id="username" class="form-control bg-black text-white border-secondary custom-input" placeholder="Ej: juan_perez" required>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label small text-secondary">Contraseña</label>
+                        <div class="input-group border-secondary">
+                            <span class="input-group-text bg-black border-secondary text-secondary">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                            <input type="password" id="password" class="form-control bg-black text-white border-secondary custom-input" placeholder="Ingrese su contraseña" required>
+                            <button class="btn btn-outline-secondary border-secondary" type="button" id="B-icon">
+                                <i class="fas fa-eye text-secondary" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="button" id="btnCrear" class="btn btn-light fw-bold py-2">
+                            <i class="fa-solid fa-user-plus"></i> Crear usuario
+                        </button>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label>Nombre completo</label>
-                <input type="text" id="nombre_completo" class="form-control" placeholder="Ej: Juan Perez">
-            </div>
-            <div class="form-group">
-                <label>Nombre de usuario</label>
-                <input type="text" id="username" class="form-control" placeholder="Ej: juan_perez">
-            </div>
-            <div class="form-group">
-                <label>Contrasena</label>
-                <input type="password" id="password" class="form-control">
-            </div>
-            <button class="btn btn-primary" id="btnCrear">
-                <i class="fa-solid fa-user-plus"></i> Crear usuario
-            </button>
-        </div>
-    </main>
-</div>
+        </main>
+    </div>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-/* Carga los roles en el select al abrir la pagina */
-fetch('/controllers/UsuarioController.php?action=roles')
-    .then(r => r.json())
-    .then(res => {
-        const sel = document.getElementById('fk_rol');
-        sel.innerHTML = '<option value="">-- Selecciona un rol --</option>';
-        res.data.forEach(rol => {
-            sel.innerHTML += `<option value="${rol.id_rol}">${rol.nombre_rol}</option>`;
-        });
-    });
-
-/* Envia el formulario de creacion */
-document.getElementById('btnCrear').addEventListener('click', () => {
-    const data = new FormData();
-    data.append('action',          'crear');
-    data.append('nombre_completo', document.getElementById('nombre_completo').value.trim());
-    data.append('username',        document.getElementById('username').value.trim());
-    data.append('password',        document.getElementById('password').value.trim());
-    data.append('fk_rol',          document.getElementById('fk_rol').value);
-
-    fetch('/controllers/UsuarioController.php', { method: 'POST', body: data })
-        .then(r => r.json())
-        .then(res => {
-            if (res.success) {
-                Swal.fire({ icon: 'success', title: res.msg, background: '#1a1a1a', color: '#f0f0f0' })
-                    .then(() => {
-                        /* Limpia el formulario tras crear */
-                        document.getElementById('nombre_completo').value = '';
-                        document.getElementById('username').value = '';
-                        document.getElementById('password').value = '';
-                        document.getElementById('fk_rol').value = '';
-                    });
-            } else {
-                Swal.fire({ icon: 'error', title: res.msg, background: '#1a1a1a', color: '#f0f0f0' });
-            }
-        });
-});
-</script>
+    <script src="../../asset/lib/sweetalert2@11.js"></script>
+    <script src="../../asset/lib/bootstrap.bundle.min.js"></script>
+    <script src="../../asset/js/crearUsuarios.js"></script>
 </body>
+
 </html>
