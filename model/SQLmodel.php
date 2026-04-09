@@ -19,14 +19,14 @@ class SQLmodel extends db{
             throw new Exception("No se pudo establecer conexión a la base de datos");
         }
         if($params && is_array($params)){
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = $this->pdo->prepare("CALL " . $sql);
             $i = 1;
             foreach($params as $param){
                 $stmt->bindValue($i, $param['value'], $param['type']);
                 $i++;
             }
         } else {
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = $this->pdo->prepare("CALL " . $sql);
         }
 
         try {

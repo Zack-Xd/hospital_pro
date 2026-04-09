@@ -1,0 +1,15 @@
+{
+    "name": "hospital_pro/app",
+    "description": "Proyecto hospital_pro usuarios",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Zack-Xd",
+            "email": "isaacmanuelcarvajal1356@gmail.com"
+        }
+    ],
+    "require": {
+        "dompdf/dompdf": "^3.1"
+    }
+}

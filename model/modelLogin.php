@@ -5,14 +5,18 @@ require_once __DIR__ . "../../conexion.php";
 $db = new db();
 $pdo = $db->conexion();
 
-function login($pdo, $username){
+function login($pdo, $username, $password){
     $stmt = $pdo->prepare('CALL sp_login(?)');
     $stmt->bindParam(1, $username, PDO::PARAM_STR);
 
     try {
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result;
+        if(password_verify($password, $result['password'])){
+            return $result;
+        } else{
+            return false;
+        }
     } catch (PDOException $e) {
         error_log('Error, no se encontro el usuario: ' . $e->getMessage());
         return false;

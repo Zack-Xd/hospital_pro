@@ -46,54 +46,10 @@ session_start();
                 </p>
             </div>
         </div>
-
-        <!-- Stats -->
-        <div class="row g-4" id="statsResumen">
-
-            <div class="col-md-4">
-                <div class="card stat-card bg-dark border-secondary text-center p-4">
-                    <i class="fa-solid fa-users stat-icon mb-2"></i>
-                    <h2 id="totalUsuarios">--</h2>
-                    <p class="text-light mb-0">Total de usuarios</p>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card stat-card bg-dark border-secondary text-center p-4">
-                    <i class="fa-solid fa-user-shield stat-icon mb-2"></i>
-                    <h2 id="totalAdmins">--</h2>
-                    <p class="text-light mb-0">Administradores</p>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card stat-card bg-dark border-secondary text-center p-4">
-                    <i class="fa-solid fa-user-gear stat-icon mb-2"></i>
-                    <h2 id="totalOps">--</h2>
-                    <p class="text-light mb-0">Operativos</p>
-                </div>
-            </div>
-
-        </div>
-
     </main>
 
 </div>
 
 <script src="../../asset/lib/bootstrap.bundle.min.js"></script>
-
-<script>
-/* Carga el resumen numerico al abrir el dashboard */
-fetch('/controllers/EstadisticaController.php?action=resumen')
-    .then(r => r.json())
-    .then(res => {
-        if (!res.success) return;
-        document.getElementById('totalUsuarios').textContent = res.total;
-        res.por_rol.forEach(r => {
-            if (r.nombre_rol === 'Administrador') document.getElementById('totalAdmins').textContent = r.cantidad;
-            if (r.nombre_rol === 'Operativo')     document.getElementById('totalOps').textContent    = r.cantidad;
-        });
-    });
-</script>
 </body>
 </html>

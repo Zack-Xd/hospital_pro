@@ -3,7 +3,7 @@
 header('Content-Type: application/json');
 session_start();
 
-require_once __DIR__ . "/../model/UsuarioModel.php";
+require_once __DIR__ . "../../model/UsuarioModel.php";
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode([
@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $model = new UsuarioModel();
 
 try {
-    $usuariosListados = $model->consultaSimple('CALL sp_obtener_usuarios()', null);
+    $usuariosListados = $model->consultaSimple('sp_obtener_usuarios()', null);
 
     echo json_encode([
         'status' => 'ok',

@@ -40,7 +40,7 @@ if ($tokenValido = validarCrsf($csrf_token)) {
 
     try {
 
-        $login = login($pdo, $user);
+        $login = login($pdo, $user, $password);
 
         if (!$login){
             echo json_encode([
@@ -49,13 +49,7 @@ if ($tokenValido = validarCrsf($csrf_token)) {
             ]);
             exit;
 
-        } elseif ($login['password'] !== $password){
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'UNO DE LOS VALORES ES INCORRECTO'
-            ]);
-            exit;
-        }
+        } 
 
         $_SESSION['user'] = [
             'id_user' => $login['id_user'],

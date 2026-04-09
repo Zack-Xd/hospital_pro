@@ -86,14 +86,15 @@ const fetchUsuarios = async () => {
             renderTable(usuariosData);
         } else {
             renderTable([]);
-            Swal.fire({
-                icon: 'info',
-                title: 'Usuarios',
-                text: data.message || 'No se pudieron cargar los usuarios',
-                theme: 'dark',
-                timer: 1800,
-                showConfirmButton: false
-            });
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Usuarios',
+                    text: data.message || 'No se pudieron cargar los usuarios',
+                    theme: 'dark',
+                    timer: 1800,
+                    showConfirmButton: false,
+                    zIndex: 10000
+                });
         }
     } catch (error) {
         tablaBody.innerHTML = `
@@ -108,17 +109,11 @@ const fetchUsuarios = async () => {
             text: 'No se pudo conectar con el servidor.',
             theme: 'dark',
             timer: 2000,
-            showConfirmButton: false
+            showConfirmButton: false,
+            zIndex: 10000
         });
     }
 };
-
-window.addEventListener('DOMContentLoaded', () => {
-    fetchUsuarios();
-    searchInput.addEventListener('input', (event) => {
-        renderTable(filterUsuarios(event.target.value));
-    });
-});
 
 const crearModal = () => {
     const modal = document.createElement('div');
@@ -218,15 +213,17 @@ document.addEventListener('click', (e) => {
                     throw new Error(data.message || 'No se pudo actualizar el usuario');
                 }
 
+                modal.remove();
+
                 await Swal.fire({
                     icon: 'success',
                     title: 'Usuario actualizado',
                     text: data.message,
                     timer: 1500,
-                    showConfirmButton: false
+                    showConfirmButton: false,
+                    zIndex: 10000
                 });
 
-                modal.remove();
                 fetchUsuarios();
             } catch (error) {
                 console.error('Error al actualizar usuario:', error);
@@ -235,11 +232,19 @@ document.addEventListener('click', (e) => {
                     title: 'Error',
                     text: error.message || 'Error al actualizar el usuario',
                     timer: 2000,
-                    showConfirmButton: false
+                    showConfirmButton: false,
+                    zIndex: 10000
                 });
             } finally {
                 saveButton.disabled = false;
             }
         });
     }
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+    fetchUsuarios();
+    searchInput.addEventListener('input', (event) => {
+        renderTable(filterUsuarios(event.target.value));
+    });
 });
